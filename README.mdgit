@@ -1,0 +1,1 @@
+"# laravel_school_managment-_system"  initgit add README.mdgit commit -m "first commit"git remote add origin https://github.com/chukegbos/laravel_school_managment-_system.gitgit push -u origin master
