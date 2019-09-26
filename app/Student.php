@@ -17,7 +17,7 @@ class Student extends Model
      * @var array
      */
     protected $fillable = [
-        'term', 'roll', 'lastname', 'middlename', 'firsname', 'password', 'gender', 'image', 'religion', 'dob', 'current_address', 'parmanent_address', 'country', 'state', 'city', 'doa', 'class', 'form', 'photo', 'guardian_relationship', 'guardian_initial', 'guardian_name', 'guardian_occupation', 'guardian_email', 'guardian_phone', 'guardian_address', 'g_image', 'school_id', 'siteini', 'bg', 'genotype', 'asthmatic', 'eye', 'eye_issue', 'disability', 'disability_issue', 'other_med', 'tribe', 'birth_certificate', 'acceptance_form', 'medical_certificate', 'transfer_certificate', 'licence', 'lgi', 'fslc', 'other_certificate', 'hostel', 'bed'
+        'term', 'roll', 'lastname', 'middlename', 'firsname', 'password', 'gender', 'image', 'religion', 'dob', 'current_address', 'parmanent_address', 'country', 'state', 'city', 'doa', 'class', 'form', 'photo', 'guardian_relationship', 'guardian_initial', 'guardian_name', 'guardian_occupation', 'guardian_email', 'guardian_phone', 'guardian_address', 'g_image', 'school_id', 'siteini', 'bg', 'genotype', 'asthmatic', 'eye', 'eye_issue', 'disability', 'disability_issue', 'other_med', 'tribe', 'birth_certificate', 'acceptance_form', 'medical_certificate', 'transfer_certificate', 'licence', 'lgi', 'fslc', 'other_certificate', 'hostel', 'bed', 'current_session'
     ];
 
      /**

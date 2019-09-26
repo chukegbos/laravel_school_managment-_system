@@ -22,8 +22,8 @@ class School extends Model
     public function getNumberofstudentAttribute()
     {
    
-        $school_id = $this->attributes['id'];
-        $numberofstudent = Student::where('deleted_at', NULL)->where('school_id', $school_id)->count();
+        $school_code = $this->attributes['school_code'];
+        $numberofstudent = Student::where('deleted_at', NULL)->where('school_code', $school_code)->count();
         return $numberofstudent;
     }
 }

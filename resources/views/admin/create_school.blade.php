@@ -121,6 +121,13 @@
                             </select>
                           </div>
 
+                          
+                          @if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer"))
+                            <input type="hidden" name="representative_type" value="{{ Auth::user()->role }}">
+                            <input type="hidden" name="representative" value="{{ Auth::user()->username }}">
+                            <input type="hidden" name="status" value="Inactive">
+                          @else
+
                           <div class="col-sm-3 form-group">
                             <label>Account Status</label>
                             <select class="form-control" name="status">
@@ -137,22 +144,27 @@
                           </div>
 
 
+
                           <div class="col-sm-4 form-group">
                             <label>Resentative Type</label>
-                            <select class="form-control" name="resentative_type">
+                            <select class="form-control" name="representative_type">
                               <option>Select</option>
-                              <option value="Resentative">Resentative</option>
-                              <option value="Consultant">Consultant</option>
+                              <option value="Sales Rep">Sales Rep</option>
+                              <option value="Marketer">Marketer</option>
                             </select>
                           </div>
+
 
                           <div class="col-sm-4 form-group">
-                            <label>Resentative</label>
-                            <select class="form-control" name="resentative">
-                              <option>Select</option>
+                            <label>Select</label>
+                            <select class="form-control" name="representative">
+                              @forelse($marketers as $resource)
+                                <option value="{{ $resource->username }}">{{ $resource->name }}</option>
+                              @empty
+                              @endforelse
                             </select>
                           </div>
-
+                          @endif
                           <div class="col-sm-12 reset-button">
                             <button class="btn btn-warning" type="reset">Reset</button>
                             <button class="btn btn-success" type="submit">Save</button>

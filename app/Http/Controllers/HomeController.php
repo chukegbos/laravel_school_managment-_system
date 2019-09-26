@@ -12,8 +12,10 @@ use App\Assessment;
 use App\Station;
 use App\Standard;
 use App\Subject;
+use App\Resource;
 use App\Subjectteacher;
 use App\User;
+use App\Mail;
 use App\Teacher;
 use App\Classes;
 use App\Result;
@@ -99,6 +101,9 @@ class HomeController extends Controller
                 return view('admin.index', compact('status', 'error'));
             }
         }
+        elseif ((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+            return redirect()->route('schools', array('status' => $status));
+        }
         else
         {
             return view('admin.index', compact('status', 'error'));
@@ -109,11 +114,23 @@ class HomeController extends Controller
     {
         $school_status = request('school_status');
         if (isset($school_status)) {
-            $schoolss = School::where('deleted_at', NULL)->where('status', $school_status)->get();
+            if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")){
+                $schoolss = School::where('deleted_at', NULL)->where('status', $school_status)->where('representative', Auth::user()->username)->get();
+                
+            }
+            else{
+                $schoolss = School::where('deleted_at', NULL)->where('status', $school_status)->get();
+            }
             return view('admin.schools', compact('schoolss', 'school_status'));
         }
         else{
-            $schoolss = School::where('deleted_at', NULL)->get();
+            if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")){
+                $schoolss = School::where('deleted_at', NULL)->where('representative', Auth::user()->username)->get();
+            }
+            else{
+               $schoolss = School::where('deleted_at', NULL)->get(); 
+            }
+            
             return view('admin.schools', compact('schoolss'));
         }       
     }
@@ -124,8 +141,30 @@ class HomeController extends Controller
         $year = $today->year;
         $month = $today->month;
         $day = $today->day;
+        function random_num($size) {
+            $alpha_key = '';
+            $keys = range('A', 'Z');
+
+            for ($i = 0; $i < 2; $i++) {
+                $alpha_key .= $keys[array_rand($keys)];
+            }
+
+            $length = $size - 2;
+
+            $key = '';
+            $keys = range(0, 9);
+
+            for ($i = 0; $i < $length; $i++) {
+                $key .= $keys[array_rand($keys)];
+            }
+
+            return $alpha_key . $key;
+        }
+        $random_number = random_num(5);
+
 
         $lastuser = School::where('deleted_at', NULL)->orderBy('id', 'desc')->first();
+        $marketers = Resource::where('deleted_at', NULL)->get();
         if (isset($lastuser)) 
         {
             $lastid = $lastuser->id + 1;
@@ -134,8 +173,8 @@ class HomeController extends Controller
         {
             $lastid = "1";
         }
-        $school_code = 'HSM/'.$year.'/000'.$lastid;
-        return view('admin.create_school', compact('school_code'));    
+        $school_code = 'HSM/'.$year.'/0'.$random_number.$lastid;
+        return view('admin.create_school', compact('school_code', 'marketers'));    
     }
 
     public function storeschool(Request $request)
@@ -207,40 +246,16 @@ class HomeController extends Controller
         $step4->thirdterm_midterm_start = Carbon::now();
         $step4->thirdterm_midterm_end = Carbon::now();
         $step4->save();
-        
-        $to      = $request->email; // Send email to our user
-        $subject = 'New School | High School Manager'; // Give the email a subject 
-        $message = '
-        Hello,
-        Thank you for signing up with High School Manager, you can now have access to online school management solution to ease up your school managerial activities.
-
-        You can access your portal via https://myschool.swiftonlineschool.com
-        Your School Details
-            School Code: '.$request->school_code.'
-            School Name: '.$request->school_name.'
-            Email: '.$request->email.'
-            
-            
-        Your School Details  
-            Login School Code: '.$request->school_code.'
-            Login username: '.$request->username.'
-            Login Password: secret
-            Login Role: School Administrator
        
-        Thank you once again for using this platform.
-        
-        
-        Chukwunonso Egbo
-        For:    High School Manager
-                info@highschoolmanager.com.ng
-                08066267671
-       '; // Our message above including the link
+                
+        $checkschool = School::where('school_code', $request->school_code)->first();
 
-        $mainmessage = strip_tags($message); 
-        $headers = 'From:noreply@highschoolmanager.com.ng' . "\r\n";; // Set from headers
-        mail($to, $subject, $mainmessage, $headers); // Send our email
-                
-                
+        if ($checkschool->status=="Inactive") {
+            $school_status = $request->status;
+            return redirect()->route('schools', array('school_status' => $school_status));
+        }
+
+
         //Attempt to log the user in
         if (Auth::guard('web')->attempt(['school_code' => $request->school_code, 'role' => 'Entrance Admin', 'password' => 'secret'])) {
             //If successful, then redirect to their intended location
@@ -310,6 +325,11 @@ class HomeController extends Controller
         $status = request('status'); 
         $error = request('error'); 
         $school_code = request('school_code');
+        $checkschool = School::where('school_code', $school_code)->first();
+
+        if ($checkschool->status=="Inactive") {
+            return redirect()->route('schools', array('school_status' => $checkschool->status));
+        }
         //Attempt to log the user in
         if (Auth::guard('web')->attempt(['school_code' => $school_code, 'role' => 'Entrance Admin', 'password' => 'secret'])) {
             //If successful, then redirect to their intended location
@@ -429,8 +449,40 @@ class HomeController extends Controller
         $status = request('status'); 
         $error = request('error'); 
         $school_code = Auth::user()->school_code;
-        $admins = User::where('school_code', $school_code)->where('role', 'Admin')->where('deleted_at', NULL)->get();
+        if (Auth::user()->role=="Zalla Admin") {
+            $admins = User::where('school_code', $school_code)->where('role', 'Zalla Admin')->where('deleted_at', NULL)->get();
+        }else
+        {
+          $admins = User::where('school_code', $school_code)->Where('role', 'Admin')->where('deleted_at', NULL)->get();  
+        }
+        
         return view('admin.admin', compact('status', 'error', 'admins'));
+    }
+
+    public function storeadmin(Request $request)
+    {
+        $school_code = $request->school_code;
+        
+        User::create($request->all());
+        $status = "Admin Created Successfully";
+        return redirect()->route('admins', array('status' => $status));
+    }
+    public function resource()
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        $role = request('role');
+        $resources = Resource::where('role', $role)->where('deleted_at', NULL)->get();  
+        return view('admin.resource', compact('status', 'error', 'resources', 'role'));
+    }
+
+    public function storeresource(Request $request)
+    {
+        $school_code = $request->school_code;
+        Resource::create($request->all());
+        User::create($request->all());
+        $status = $request->role.' Created Successfully';
+        return redirect()->route('resource', array('status' => $status, 'role' => $request->role));
     }
 
     public function schoolstamp()
@@ -1010,7 +1062,8 @@ class HomeController extends Controller
     public function storestudent(Request $request)
     {
         $school_code = Auth::user()->school_code;
-        
+        $school = School::where('school_code', $school_code)->first();
+
         $student = new Student();
         $student->school_code = $school_code; 
         $student->roll = $request->roll; 
@@ -1023,6 +1076,7 @@ class HomeController extends Controller
         $student->country = $request->country;
         $student->state = $request->state; 
         $student->city = $request->city; 
+        $student->current_session = $school->current_session; 
         if(isset($request->class))
         {
             $student->class = $request->class;
@@ -1197,6 +1251,9 @@ class HomeController extends Controller
 
         elseif (isset($request->class)) 
         {
+            $school_code = Auth::user()->school_code;
+            $school = School::where('school_code', $school_code)->first();
+
             if ($request->hostel!=$student->hostel) {
                 $oldbed = Bed::where('deleted_at', NULL)->where('occupant', $student->roll)->get();
                 foreach ($oldbed as $key) {
@@ -1212,7 +1269,7 @@ class HomeController extends Controller
                     $student->bed = $bed->bed_number;
                 }
             }
-
+            $student->current_session = $school->current_session; 
             $student->roll = $request->roll; 
             $student->class = $request->class;
             $student->doa = $request->doa;
@@ -4145,23 +4202,135 @@ class HomeController extends Controller
         return redirect()->back()->with("success","Password changed successfully !"); 
     }
 
-    public function openticket()
+    //Mail
+    public function mail()
     {
         $status = request('status');
         $error = request('error'); 
         $school_code = Auth::user()->school_code;
-        $books = Book::where('school_code', $school_code)->where('deleted_at', NULL)->get();
+        $username = Auth::user()->username;
+        $schools = School::where('deleted_at', NULL)->where('status', "Active")->where('representative', $username)->get();
+        if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+            $mails = Mail::where('to', 'Admin')->where('representative', $username)->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6);
+
+            $countmail = Mail::where('to', 'Admin')->where('representative', $username)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+
+        }
+        elseif(Auth::user()->role=="Zalla Admin") {
+            $mails = Mail::where('to', 'Admin')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6);
+            $countmail = Mail::where('to', 'Admin')->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+        else
+        {
+
+            $mails = Mail::where('to', $school_code)->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6); 
+
+            $countmail = Mail::where('to', $school_code)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
         
-        return view('ticket.openticket', compact('status', 'error'));
+        return view('ticket.index', compact('status', 'error', 'mails', 'schools', 'countmail'));
+    }
+
+    public function sentmail()
+    {
+        $status = request('status');
+        $error = request('error'); 
+        $school_code = Auth::user()->school_code;
+        $username = Auth::user()->username;
+        $schools = School::where('deleted_at', NULL)->where('status', "Active")->where('representative', $username)->get();
+        if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+            $mails = Mail::where('from', 'Admin')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6);
+            $countmail = Mail::where('to', 'Admin')->where('representative', $username)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+
+        }
+        elseif(Auth::user()->role=="Zalla Admin") {
+            $mails = Mail::where('from', 'Admin')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6);
+            $countmail = Mail::where('to', 'Admin')->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+        else
+        {
+            $mails = Mail::where('school_code', $school_code)->where('from', $school_code)->where('deleted_at', NULL)->orderBy('created_at', 'desc')->paginate(6); 
+            $countmail = Mail::where('school_code', $school_code)->where('to', $school_code)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+        
+        return view('ticket.sentmail', compact('status', 'error', 'mails', 'schools', 'countmail'));
     }
 
     public function compose()
     {
+        $school_code = Auth::user()->school_code;
         $status = request('status');
         $error = request('error'); 
-        return view('ticket.compose', compact('status', 'error'));
+        $school = School::where('school_code', $school_code)->where('deleted_at', NULL)->first();
+
+        $username = Auth::user()->username;
+        $schools = School::where('deleted_at', NULL)->where('status', "Active")->where('representative', $username)->get();
+        if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+            $countmail = Mail::where('to', 'Admin')->where('representative', $username)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+
+        }
+        elseif(Auth::user()->role=="Zalla Admin") {
+            $countmail = Mail::where('to', 'Admin')->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+        else
+        {
+            $countmail = Mail::where('school_code', $school_code)->where('to', $school_code)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+
+
+        return view('ticket.compose', compact('status', 'error', 'countmail'));
+    }
+    public function readmail()
+    {
+        $school_code = Auth::user()->school_code;
+        $status = request('status');
+        $error = request('error'); 
+        $msg_id = request('msg_id');
+        $msg = Mail::where('msg_id', $msg_id)->where('deleted_at', NULL)->first();
+
+        $username = Auth::user()->username;
+        $schools = School::where('deleted_at', NULL)->where('status', "Active")->where('representative', $username)->get();
+        if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+            $countmail = Mail::where('to', 'Admin')->where('representative', $username)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+
+        }
+        elseif(Auth::user()->role=="Zalla Admin") {
+            $countmail = Mail::where('to', 'Admin')->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+        else
+        {
+            $countmail = Mail::where('school_code', $school_code)->where('to', $school_code)->where('status', 'Unread')->where('deleted_at', NULL)->orderBy('created_at', 'desc')->count();
+        }
+
+        return view('ticket.index', compact('status', 'error', 'msg', 'countmail'));
     }
 
+    public function storecompose(Request $request)
+    {
+        
+        $step1 = new Mail();
+        $step1->to = $request->to;
+        $step1->from = $request->from;
+        $step1->school_code = $request->school_code;
+        $step1->name = $request->name;
+        $step1->subject = $request->subject;
+        $step1->message = $request->message;
+        $step1->msg_id = $request->msg_id;
+        $step1->status = "Unread";
+
+        $school = School::where('school_code', $request->school_code)->where('deleted_at', NULL)->first();
+        if (isset($school) && isset($school->representative)) {
+            $step1->representative = $school->representative;
+        }
+        if ($request->file('attachment')) {
+            $file1 = $request->file('attachment');
+            $path1 = Storage::disk('public1')->putFile('attachment', $file1);
+            $step1->attachment = $path1;
+        }
+        $status = 'Ticket Succssfully Added. '.$request->msg_id.' is the ticket ID, always use it to notify the vendor, should incase your message is been responded to.';
+        $step1->save();
+        return redirect()->route('compose', array('status' => $status ));
+    }
     //Staff
 
     public function formclass()
@@ -4511,5 +4680,25 @@ class HomeController extends Controller
         return redirect()->route('assessmentsheet', array('session' => $session, 'class' => $class, 'term' => $term, 'school_code' => $school_code));      
     }
 
-
+    public function search(Request $request)
+    {
+        $school_code = Auth::user()->school_code;
+        $username = Auth::user()->username;
+        if($request->ajax()){
+            $output="";
+            if ((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) 
+            {
+                $products = School::where('deleted_at', NULL)->where('school_code', $request->search)->where('representative', $username)->first();
+            }
+            else
+            {
+                $products = School::where('deleted_at', NULL)->where('school_code', $request->search)->first();
+            }
+            if(isset($products))
+            {
+                $output.=$products->school_name;
+                return Response($output);
+            }
+        }
+    }
 }

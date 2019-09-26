@@ -14,7 +14,6 @@
                 </a>
             </li>
             @if(Auth::user()->role=="Zalla Admin")
-
                 <li class="treeview">
                     <a href="">
                         <i class="fa fa-bank"></i><span>Schools</span>
@@ -29,7 +28,6 @@
                         <li><a href="{{ url('/admin/schools') }}/?school_status=Inactive">Inactive School</a></li>         
                     </ul>
                 </li>
-
 
                 <li class="treeview">
                     <a href="">
@@ -52,8 +50,8 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{{ url('/admin/consultants') }}">Consultants</a></li>
-                        <li><a href="{{ url('/admin/representatives') }}">Representatives</a></li> 
+                        <li><a href="{{ url('/admin/resource') }}/?role=Marketer">Marketers</a></li>
+                        <li><a href="{{ url('/admin/resource') }}/?role=Sales Rep">Sales Rep</a></li> 
                         <li><a href="{{ url('/admin/admins') }}">Admin</a></li>           
                     </ul>
                 </li>
@@ -72,13 +70,36 @@
                 </li>
 
                 <li>
-                    <a href="{{ url('/admin/schools') }}"><i class="fa fa-gear"></i><span>Schools Request</span>
+                    <a href="{{ url('/admin/mail') }}"><i class="fa fa-envelope-o"></i><span>Support</span>
                     </a>
                 </li>
+            @elseif((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer"))
+                <li class="treeview">
+                    <a href="">
+                        <i class="fa fa-bank"></i><span>My Schools</span>
+                        <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ url('/admin/schools') }}/?school_status=Active">Active School</a></li>
+                        <li><a href="{{ url('/admin/schools') }}/?school_status=Trial">On Trial</a></li> 
+                        <li><a href="{{ url('/admin/schools') }}/?school_status=Request">On Request</a></li>
+                        <li><a href="{{ url('/admin/schools') }}/?school_status=Inactive">Inactive School</a></li>         
+                    </ul>
+                </li> 
+                <li>
+                    <a href="{{ url('/admin/mail') }}"><i class="fa fa-envelope-o"></i><span>Support</span>
+                    </a>
+                </li>              
             @elseif((Auth::user()->role=="Entrance Admin") || (Auth::user()->role=="Admin"))
                 @if(Auth::user()->role=="Entrance Admin")
                     <li>
                         <a href="#" data-toggle="modal" data-target="#confirm" ><i class="fa fa-bank"></i><span>Switch Back</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/admin/mail') }}"><i class="fa fa-envelope-o"></i><span>Support</span>
                         </a>
                     </li>
                 @endif
@@ -154,7 +175,7 @@
                     </ul>
                 </li>
 
-                <li class="treeview">
+                <!--<li class="treeview">
                     <a href="#">
                         <i class="fa fa-sitemap"></i><span>Attendance Management</span>
                         <span class="pull-right-container">
@@ -167,7 +188,22 @@
                     </ul>
                 </li>
 
-                <!--<li class="treeview">
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-money"></i><span>Human Resource Management</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ url('/admin/designation') }}">Designation</a></li>
+                        <li><a href="{{ url('/admin/resource') }}">Staff</a></li>
+                        <li><a href="{{ url('/admin/leave') }}">Leave Management</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="treeview">
                     <a href="#">
                         <i class="fa fa-money"></i><span>Fee Management</span>
                         <span class="pull-right-container">
@@ -224,6 +260,10 @@
                     <a href="{{ url('/admin/openticket') }}"><i class="hvr-buzz-out fa fa-ticket"></i><span>Mail/Help</span>
                     </a>
                 </li>-->
+                <li>
+                    <a href="{{ url('/admin/mail') }}"><i class="fa fa-envelope-o"></i><span>Support</span>
+                    </a>
+                </li>
             @elseif(Auth::user()->role=="Staff")
                 <li>
                     <a href="{{ url('/admin/formclass') }}">
@@ -258,7 +298,7 @@
                 <a href="#"><i class="fa fa-home"></i><span>Visit Website</span>
                 </a>
             </li>-->
-
+            
             <li>
                 <a href="{{ url('/password') }}"><i class="fa fa-key"></i><span>Change Password</span>
                 </a>

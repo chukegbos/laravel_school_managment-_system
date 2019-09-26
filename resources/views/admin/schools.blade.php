@@ -53,6 +53,7 @@
                                         <th>Name</th>
                                         <th>Phone</th>
                                         <th>Email</th>
+                                        <th>No of Students</th>
                                         <th>Action</th>
                                         <th>Expiration Date</th>
                                         <th>Delete</th>
@@ -67,13 +68,14 @@
                                         <td>{{ $school->school_name }}</td>
                                         <td>{{ $school->phone }}</td>
                                         <td><a href="mailto:{{ $school->email }}">{{ $school->email }}</a></td>
+                                        <td>{{ $school->number_of_student }}</td>
                                         <td>
-                                            <!--<a href="{{ url('/admin/edit') }}/?school_code={{ $school->school_code }}" class="btn btn-success btn-xs">Edit</a>-->
-                                            <a href="{{ url('/admin/visit') }}/?school_code={{ $school->school_code }}" class="btn btn-info btn-xs">View</a>
-
+                                           
                                             @if($school->status=="Active")
+                                                <a href="{{ url('/admin/visit') }}/?school_code={{ $school->school_code }}" class="btn btn-info btn-xs">View</a>
                                                 <a href="{{ url('/admin') }}/deactivate/?school_code={{ $school->school_code }}" class="btn btn-inverse btn-xs">Deactivate</a>
                                             @elseif($school->status=="Trial")
+                                                <a href="{{ url('/admin/visit') }}/?school_code={{ $school->school_code }}" class="btn btn-info btn-xs">View</a>
                                                 <a href="{{ url('/admin') }}/activate/?school_code={{ $school->school_code }}" class="btn btn-warning btn-xs">Activate</a>
 
                                                 <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#extendmodal{{ $school->id }}">Extend</a>
@@ -102,9 +104,15 @@
                                                     </div>
                                                 </div>
                                             @elseif($school->status=="Request")
+                                                <a href="{{ url('/admin/visit') }}/?school_code={{ $school->school_code }}" class="btn btn-info btn-xs">View</a>
                                                 <a href="{{ url('/admin') }}/trial/?school_code={{ $school->school_code }}" class="btn btn-warning btn-xs">Put Trial</a>
                                             @else
-                                                <a href="{{ url('/admin') }}/activate/?school_code={{ $school->school_code }}" class="btn btn-warning btn-xs">Activate</a>
+                                                @if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer"))
+                                                    Not Activated
+                                                @else
+                                                    <a href="{{ url('/admin/visit') }}/?school_code={{ $school->school_code }}" class="btn btn-info btn-xs">View</a>
+                                                    <a href="{{ url('/admin') }}/activate/?school_code={{ $school->school_code }}" class="btn btn-warning btn-xs">Activate</a>
+                                                @endif
                                             @endif
                                         </td>
                                         @if($school->status=="Active")

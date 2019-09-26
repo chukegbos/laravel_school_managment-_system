@@ -40,6 +40,11 @@ Route::prefix('admin')->group(function () {
 	Route::post('/admins', 'HomeController@storeadmin')->name('storeadmin');
 	Route::delete('/destroyadmin/{id}', 'HomeController@destroyadmin')->name('destroyadmin');
 
+	Route::get('/resource', 'HomeController@resource')->name('resource');
+	Route::post('/resource', 'HomeController@storeresource')->name('storeresource');
+	Route::delete('/destroyresource/{id}', 'HomeController@destroyresource')->name('destroyresource');
+
+
 	Route::get('/schools', 'HomeController@schools')->name('schools');
 	Route::get('/create-school', 'HomeController@create_school')->name('create_school');
 	Route::post('/create-school', 'HomeController@storeschool')->name('storeschool');
@@ -135,7 +140,11 @@ Route::prefix('admin')->group(function () {
 	Route::get('/marksuccess', 'HomeController@marksuccess')->name('marksuccess');
 	Route::post('/lend', 'HomeController@storelend')->name('storelend');
 
+	Route::get('/mail', 'HomeController@mail')->name('mail');
+	Route::post('/compose', 'HomeController@storecompose')->name('storecompose');
 	Route::get('/compose', 'HomeController@compose')->name('compose');
+	Route::get('/sentmail', 'HomeController@sentmail')->name('sentmail');
+	Route::get('/readmail', 'HomeController@readmail')->name('readmail');
 	Route::get('/openticket', 'HomeController@openticket')->name('openticket');
 
 
@@ -169,6 +178,8 @@ Route::get('/admission', 'AdmissionController@index')->name('getadmission');
 Route::post('/admission', 'AdmissionController@storeadmission')->name('storeadmission');
 Route::get('/back', 'AdmissionController@back')->name('back');
 Route::post('/passwordemail', 'AdmissionController@passwordemail')->name('passwordemaill');
+
+Route::post('/search','HomeController@search');
 Auth::routes();
 
 

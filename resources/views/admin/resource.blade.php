@@ -1,10 +1,10 @@
 @extends('layouts.admin')
-@section('pageTitle', 'Admin')
+@section('pageTitle', 'Resources')
 @section('content')
   <div class="content-wrapper">
     <section class="content-header">
-      <span style="font-size:20px">All Admins</span> 
-      <a class="btn btn-primary pull-right" href="#" data-toggle="modal" data-target="#addadminmodal" >Add Admin</a>
+      <span style="font-size:20px">All {{ ucfirst($role) }}s</span> 
+      <a class="btn btn-primary pull-right" href="#" data-toggle="modal" data-target="#addresourcemodal" >Add {{ ucfirst($role) }}s</a>
     </section>
 
     <section class="content">
@@ -32,26 +32,30 @@
                 <table id="example2" class="table table-bordered table-hover">
                   <thead>
                     <tr>
+                      <th>Name</th>
                       <th>Username</th>
                       <th>Email</th>
-                      <th>Role</th>
+                      <th>Phone</th>
+                      <th>Address</th>
+                      <th>Schools</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
-                    @forelse($admins as $admin)
+                    @forelse($resources as $resource)
                     <tr>
-                      <td>{{ $admin->username }}</td>
-                      <td>{{ $admin->email }}</td>
-                      <td>{{ $admin->role }}</td>
+                      <td>{{ $resource->name }}</td>
+                      <td>{{ $resource->username }}</td>
+                      <td>{{ $resource->email }}</td>
+                      <td>{{ $resource->phone }}</td>
+                      <td>{{ $resource->address}}</td>
+                      <th></th>
                      <td>
-                      @if($admin->username!=Auth::user()->username)
-                        <form action="{{ url('/admin/destroyadmin') }}/{{$admin->id}}" method="POST">
+                        <form action="{{ url('/resource/destroyresource') }}/{{$resource->id}}" method="POST">
                           {{ csrf_field() }}
                           {{ Method_field('DELETE') }}
                            <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                         </form>
-                      @endif
                       </td>
                     </tr>
                     @empty
@@ -66,43 +70,41 @@
     </section>
   </div>
 
-  <div class="modal fade" id="addadminmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal fade" id="addresourcemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
       <div class="modal-dialog" style="background:white">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"> Add Admin</h4>
+              <h4 class="modal-title"> Add resource</h4>
             </div>
             <div class="modal-body">
-              <form method="post" class="profile-wrapper" action="{{ url('admin/admins') }}" >
+              <form method="post" class="profile-wrapper" action="{{ url('admin/resource') }}" >
                 {{ csrf_field() }}
+                <div class="form-group">
+                  <label for="fname">Name</label>
+                  <input type="hidden" name="school_code" value="{{ $setting->school_code }}">
+                  <input class="form-control" type="text" name="name" required autofocus>
+                </div>                        
                 <div class="form-group">
                   <label for="fname">Username</label>
                   <input class="form-control" type="text" name="username" required autofocus>
-                </div>                        
+                </div> 
+                <div class="form-group">
+                  <label for="fname">Phone</label>
+                  <input type="hidden" name="role" value="{{ $role }}">
+                  <input class="form-control" type="text" name="phone" autofocus>
+                </div>  
                 <div class="form-group">
                   <label for="fname">Email</label>
-                  <input class="form-control" type="email" name="email" required autofocus>
+                  <input type="hidden" name="password" value="$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm">
+                  <input class="form-control" type="email" name="email" autofocus>
                 </div> 
 
                 <div class="form-group">
-                  <input type="hidden" name="password" value="$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm">
-                  <input type="hidden" name="school_code" value="{{ $setting->school_code }}">
-                  @if(Auth::user()->role=="Zalla Admin")
-                    <input type="hidden" name="role" value="Zalla Admin">
-                  @else
-                    <input type="hidden" name="role" value="Admin">
-                  @endif
-                  
-                  <label for="fname">Role</label>
-                  <select class="form-control" required="" name="sub_role">
-                    @if(Auth::user()->role=="Zalla Admin")
-                      <option value="Zalla Sub Admin">Admin</option>
-                    @else
-                      <option value="School Admin">Admin</option>
-                    @endif
-                  </select>
+                  <label for="fname">Address</label>
+                  <textarea class="form-control" name="address"></textarea>
                 </div> 
+
                 <button type="submit" class="btn btn-success pull-right">Add <i class="fa fa-save"></i></button>                              
               </form>
             </div>
