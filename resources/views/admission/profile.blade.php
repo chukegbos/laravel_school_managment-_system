@@ -51,7 +51,7 @@
                 <div class="col-sm-12">
                   <div class="row">
                     <div class="col-sm-12">
-                      <div style="background:#009688; height:auto; text-align: center; color: white">
+                      <div style="background:#DC2D2D; height:auto; text-align: center; color: white">
                         <h4 style="padding: 20px">Applicant Profile</h4>
                       </div>
 

@@ -43,7 +43,7 @@
     <!--<link href="{{ asset('assets/dist/css/stylehealth-rtl.css') }}" rel="stylesheet" type="text/css"/>-->
     <!-- End Theme Layout Style
     =====================================================================-->
-   <!--<script src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>-->
+   <script src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>
    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
    <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 
@@ -98,6 +98,12 @@
       {
         background: {{ $setting->color }}
       }
+
+      * {
+          -webkit-print-color-adjust: exact !important;   /* Chrome, Safari */
+          color-adjust: exact !important;                 /*Firefox*/
+      }
+      
     </style>
   </head>
     <body class="hold-transition sidebar-mini">

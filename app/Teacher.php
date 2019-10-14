@@ -17,7 +17,7 @@ class Teacher extends Model
      * @var array
      */
     protected $fillable = [
-       'roll', 'lastname', 'middlename', 'firsname', 'password', 'gender', 'image', 'religion', 'dob', 'current_address', 'parmanent_address', 'country', 'state', 'city', 'class', 'form', 'category', 'email', 'phone', 'last_degree', 'university_attended', 'subject', 'school_id', 'siteini'
+       'roll', 'lastname', 'middlename', 'firsname', 'password', 'gender', 'image', 'religion', 'dob', 'current_address', 'parmanent_address', 'country', 'state', 'city', 'class', 'form', 'category', 'email', 'phone', 'last_degree', 'university_attended', 'subject', 'school_code', 'salary', 'level', 'post'
     ];
 
      /**

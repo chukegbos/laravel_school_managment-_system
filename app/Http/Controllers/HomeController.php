@@ -18,7 +18,10 @@ use App\User;
 use App\Mail;
 use App\Teacher;
 use App\Classes;
+use App\Card;
 use App\Result;
+use App\Salary;
+use App\Invoice;
 use App\Admission;
 use Auth;
 use DB;
@@ -34,6 +37,8 @@ use Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
+use App\Feecollectiontype;
+use App\Account;
 
 class HomeController extends Controller
 {
@@ -64,10 +69,7 @@ class HomeController extends Controller
         $school_code = Auth::user()->school_code;
         $checkschool = School::where('school_code', $school_code)->first();
 
-        if ($checkschool->status!="Active") {
-            return view('accountlock', compact('checkschool'));
-        }
-
+        
         $schools = School::where('status', 'trial')->get(); 
         foreach ($schools as $key) {
             if ($key->trial_end<=$today) {
@@ -84,39 +86,48 @@ class HomeController extends Controller
             }
         }
 
-        $status = request('status'); 
-        $error = request('error'); 
-        if (Auth::user()->role=="Staff") {
-            $name = Auth::user()->username;
-            $form = Classes::where('deleted_at', NULL)->where('form_teacher', $name)->first();
-            if (isset($form)) {
+        if ($checkschool->status=="Inactive") {
+            return view('accountlock', compact('checkschool'));
+        }
+        elseif ($checkschool->status=="Active" || $checkschool->status=="Trial") {
+            $status = request('status'); 
+            $error = request('error'); 
+            if (Auth::user()->role=="Staff") {
+                $name = Auth::user()->username;
+                $form = Classes::where('deleted_at', NULL)->where('form_teacher', $name)->first();
+                if (isset($form)) {
 
-                $subject_offered = $form->subject_offered;
-                $exploded = explode(",",$subject_offered);
-                $length = count($exploded);
-                return view('admin.index', compact('status', 'error', 'exploded', 'length'));
+                    $subject_offered = $form->subject_offered;
+                    $exploded = explode(",",$subject_offered);
+                    $length = count($exploded);
+                    return view('admin.index', compact('status', 'error', 'exploded', 'length'));
+                }
+                else
+                {
+                    return view('admin.index', compact('status', 'error'));
+                }
+            }
+            elseif (Auth::user()->role=="Student"){
+                $username = Auth::user()->username;
+                $profile = Student::where('roll', $username)->where('deleted_at', NULL)->first();
+                $hostels=Hostel::where('deleted_at', NULL)->where('school_code', $school_code)->get();
+                return view('admin.index', compact('status', 'error', 'profile', 'hostels'));
+            }
+            elseif ((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
+                return redirect()->route('schools', array('status' => $status));
             }
             else
             {
                 return view('admin.index', compact('status', 'error'));
-            }
-        }
-        elseif ((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")) {
-            return redirect()->route('schools', array('status' => $status));
-        }
-        else
-        {
-            return view('admin.index', compact('status', 'error'));
-        }       
+            } 
+        }      
     }
-
     public function schools()
     {
         $school_status = request('school_status');
         if (isset($school_status)) {
             if((Auth::user()->role=="Sales Rep") || (Auth::user()->role=="Marketer")){
                 $schoolss = School::where('deleted_at', NULL)->where('status', $school_status)->where('representative', Auth::user()->username)->get();
-                
             }
             else{
                 $schoolss = School::where('deleted_at', NULL)->where('status', $school_status)->get();
@@ -161,8 +172,6 @@ class HomeController extends Controller
             return $alpha_key . $key;
         }
         $random_number = random_num(5);
-
-
         $lastuser = School::where('deleted_at', NULL)->orderBy('id', 'desc')->first();
         $marketers = Resource::where('deleted_at', NULL)->get();
         if (isset($lastuser)) 
@@ -541,6 +550,12 @@ class HomeController extends Controller
         return back();
     }
 
+    public function destroyresource($id)
+    {
+        Resource::destroy($id);
+        return back();
+    }
+
     public function storeschoolsetting(Request $request)
     {
         $school_code = $request->school_code;
@@ -790,6 +805,11 @@ class HomeController extends Controller
         $teacher->university_attended = $request->university_attended;
         $teacher->subject = $request->subject; 
 
+        $teacher->level = $request->level; 
+        $teacher->salary = $request->salary; 
+        $teacher->post = $request->post;
+
+
         $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd'];
 
         if ($request->file('image')) {
@@ -867,6 +887,11 @@ class HomeController extends Controller
         $teacher->state = $request->state; 
         $teacher->city = $request->city; 
         $teacher->position = $request->position;
+
+        $teacher->post = $request->post;
+        $teacher->salary = $request->salary; 
+        $teacher->level = $request->level; 
+
         $teacher->last_degree = $request->last_degree; 
         $teacher->category = $request->category; 
         $teacher->current_address = $request->current_address; 
@@ -1033,8 +1058,73 @@ class HomeController extends Controller
         return view('academics.students', compact('allstudents', 'classes'));
     }
 
+    public function manageschoolfees()
+    {
+        $school_code = Auth::user()->school_code;
+        $school = School::where('deleted_at', NULL)->where('school_code', $school_code)->first();
+        $term = $school->current_term;
+        $session = $school->current_session;
+
+        $students = Student::where('deleted_at', NULL)->where('current_session', $session)->where('school_code', $school_code)->orderBy('created_at', 'desc')->get(); 
+
+        foreach($students as $student) {
+            $class = $student->getOriginal('class');
+            $findclass = Classes::findOrFail($class);
+            $amount = $findclass->school_fees;
+            Account::updateOrCreate([
+                'school_code' => $school_code,
+                'description' => $session.' academic session, '.$term.' term school fees.',
+                'class' => $student->class,
+                'session' => $session,
+                'amount' => $amount,
+                'term' => $term,
+                'paid_to' => $school->school_name,
+                'payee' => $student->roll,
+            ],[
+                'school_code' => $school_code,
+                'description' => $session.' academic session, '.$term.' term school fees.',
+                'class' => $student->class,
+                'session' => $session,
+                'amount' => $amount,
+                'term' => $term,
+                'paid_to' => $school->school_name,
+                'payee' => $student->roll,
+            ]);
+        }
+        $classes = Classes::get();
+        $paidstudent = Student::get();
+        $allstudents = Account::where('deleted_at', NULL)->where('session', $session)->where('school_code', $school_code)->orderBy('created_at', 'desc')->get(); 
+        return view('busary.manageschoolfees', compact('allstudents', 'classes', 'paidstudent'));
+    }
+
+    public function schoolfeeshistory()
+    {
+        $school_code = Auth::user()->school_code;
+        $school = School::where('deleted_at', NULL)->where('school_code', $school_code)->first();
+        $term = $school->current_term;
+        $session = $school->current_session;
+
+        $classes = Classes::get();
+        $paidstudent = Student::get();
+        $allstudents = Account::where('deleted_at', NULL)->where('school_code', $school_code)->orderBy('created_at', 'desc')->get(); 
+        return view('busary.manageschoolfees', compact('allstudents', 'classes', 'paidstudent', 'term'));
+    }
+
+    public function markfee()
+    { 
+        $id = request('id');  
+        if (isset($id)) {
+            $account = Account::findOrFail($id);
+            $account->status = "Paid";
+            $account->update();
+        }
+        return back();
+    }
+
     public function addstudent()
     {
+        $error = request('error');
+        $status = request('status');
         $today = Carbon::today();
         $year = $today->year;
         $month = $today->month;
@@ -1056,7 +1146,7 @@ class HomeController extends Controller
         $classes = Classes::where('deleted_at', NULL)->where('school_code', $school_code)->get();
         $subjects = Subject::where('deleted_at', NULL)->where('school_code', $school_code)->get();
         $hostels = Hostel::where('deleted_at', NULL)->where('school_code', $school_code)->get();
-        return view('academics.addstudent', compact('random_number', 'classes', 'subjects', 'hostels'));
+        return view('academics.addstudent', compact('random_number', 'classes', 'subjects', 'hostels', 'status', 'error'));
     }
 
     public function storestudent(Request $request)
@@ -1113,6 +1203,7 @@ class HomeController extends Controller
         
 
         $imageExtensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'svgz', 'cgm', 'djv', 'djvu', 'ico', 'ief','jpe', 'pbm', 'pgm', 'ppm', 'ras', 'rgb', 'tif', 'tiff', 'wbmp', 'xbm', 'xpm', 'xwd'];
+
 
         if ($request->file('image')) {
             $file1 = $request->file('image');
@@ -1396,7 +1487,6 @@ class HomeController extends Controller
         if(in_array($subjectname, $exploded)) {
             if ($term != "Annual") {
                 foreach($students as $student) {
-
                     Result::updateOrCreate([
                         'school_code' => $school_code,
                         'class' => $class,
@@ -3683,12 +3773,59 @@ class HomeController extends Controller
         $roll = $request->roll;
         $session = $request->session;
         $term = $request->term; 
-        if ($roll==NULL) {
-            return back();
+        $pin= $request->pin; 
+        if (Auth::user()->role=="Student") {
+            if (isset($pin)) {
+                $card = Card::where('deleted_at', NULL)->where('token', $pin)->first();
+                if (isset($card)) {
+                    if ($card->status==0) {
+                        $card->status = 1;
+                        $card->roll = $roll;
+                        $card->date_used = Carbon::now();
+                        $card->count = $card->count + 1;
+                        $card->update();
+                        return redirect()->route('getresult', array('session' => $session, 'term' => $term, 'roll' =>$roll));
+                    }
+                    else
+                    {
+                        if ($card->roll!=$roll) {
+                            $error = "This PIN dose not belong to you.";
+                            return redirect()->route('viewresult', array('error' => $error));
+                        }
+                        else
+                        {
+                            $card->status = 1;
+                            $card->roll = $roll;
+                            $card->date_used = Carbon::now();
+                            $card->count = $card->count + 1;
+                            $card->update();
+                            return redirect()->route('getresult', array('session' => $session, 'term' => $term, 'roll' =>$roll));
+                        }
+                    }
+                }
+                else
+                {
+                    $error = "Invalid PIN";
+                    return redirect()->route('viewresult', array('error' => $error));
+                }
+            }
+            else
+            {
+                $error = "Please put your scratch card PIN";
+                return redirect()->route('viewresult', array('error' => $error));
+            }
+
         }
-        else
-        {
-        return redirect()->route('getresult', array('session' => $session, 'term' => $term, 'roll' =>$roll));
+
+        else{
+
+            if ($roll==NULL) {
+                return back();
+            }
+            else
+            {
+            return redirect()->route('getresult', array('session' => $session, 'term' => $term, 'roll' =>$roll));
+            }
         }
     }    
 
@@ -4336,7 +4473,9 @@ class HomeController extends Controller
     public function formclass()
     {
         $name = Auth::user()->username;
-        $form = Classes::where('deleted_at', NULL)->where('form_teacher', $name)->first();
+        $id = request('id');
+        $form= Classes::findOrFail($id);
+        //$form = Classes::where('deleted_at', NULL)->where('form_teacher', $name)->first();
         if (isset($form)) {
             $formname = $form->form;
             $class = $form->name;
@@ -4362,6 +4501,13 @@ class HomeController extends Controller
             $error = "You have not been assigned to any form class' Contact the school admin to do so.";
             return redirect()->route('home', array('error' => $error));
         }
+    }
+
+    public function getformclass()
+    {
+        $name = Auth::user()->username;
+        $forms = Classes::where('deleted_at', NULL)->where('form_teacher', $name)->get();
+        return view('staff.getformclass', compact('forms'));
     }
 
     public function subjectcheck(Request $request)
@@ -4522,6 +4668,14 @@ class HomeController extends Controller
         return view('staff.assessment', compact('results', 'session', 'term',  'class', 'form'));       
     }
 
+    public function editschoolfees(Request $request)
+    {
+        //return $request;
+        $class = Classes::findOrFail($request->id);
+        $class->update($request->all());
+        return back();
+    }
+
     public function admissionform()
     {
         $today = Carbon::today();
@@ -4668,6 +4822,7 @@ class HomeController extends Controller
 
         return view('result.assessmentsheet', compact('results', 'session', 'sessionsname', 'term', 'class', 'standard', 'classname'));
     }
+
     public function storeassessmentsheet(Request $request)
     {
         $id = $request->id;
@@ -4701,4 +4856,300 @@ class HomeController extends Controller
             }
         }
     }
+
+       //feetype starts
+    public function feetype()
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        $school_code = Auth::user()->school_code;
+        $feetypes=Feecollectiontype::where('deleted_at', NULL)->where('school_code', $school_code)->get();
+        return view('busary.feetype', compact('feetypes', 'error', 'status'));
+    }
+
+    public function storefeetype(Request $request)
+    {
+        Feecollectiontype::create($request->all());
+        $status = "Fee Type Created Successfully";
+        return redirect()->route('feetype', array('status' => $status));
+    }
+
+     public function editfeetype($id)
+    {
+        $feetype = feetype::findOrFail($id);
+        return view('editfeetype', compact('feetype'));
+    }
+
+    public function updatefeetype(Request $request, $id)
+    {
+        $step1 = feetype::findOrFail($id);    
+        $step1->name = $request->name;
+        $step1->price = $request->price;
+       
+        $step1->update();
+        return redirect('/feetype');
+    }
+
+    public function destroyfeetype($id)
+    {
+        Feecollectiontype::destroy($id);
+        return back();
+    } 
+    //end of feetype
+
+    public function type()
+    {
+        $type = request('type');
+        $school_code = Auth::user()->school_code;  
+        if (isset($type)) {
+           $feetypes = Feecollectiontype::where('deleted_at', NULL)->where('school_code', $school_code)->where('type', $type)->get();
+            return view('busary.type', compact('feetypes', 'type'));
+        }
+        else
+        {
+            $feetypes = Feecollectiontype::where('deleted_at', NULL)->where('school_code', $school_code)->get();
+            return view('busary.type', compact('feetypes'));
+        }
+    }
+
+    public function invoicelist()
+    {
+        $school_code = Auth::user()->school_code;
+        $error = request('error');  
+        $status = request('status');  
+        $invoice = Invoice::where('deleted_at', NULL)->where('school_code', $school_code)->get();
+        return view('busary.invoice', compact('invoice', 'error', 'status'));
+    }
+
+    public function invoice()
+    {
+        $school_code = Auth::user()->school_code; 
+        function random_num($size) {
+          $alpha_key = '';
+          $keys = range('A', 'Z');
+
+          for ($i = 0; $i < 2; $i++) {
+            $alpha_key .= $keys[array_rand($keys)];
+          }
+
+          $length = $size - 2;
+
+          $key = '';
+          $keys = range(0, 9);
+
+          for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+          }
+
+          return $key.$alpha_key.$key;
+        }
+        $invoice_id = random_num(12);
+        $error = request('error');  
+        $status = request('status');  
+        
+        $sessions = Session::where('deleted_at', NULL)->get();
+        $feetypes = Feecollectiontype::where('deleted_at', NULL)->where('title', $type)->get();
+        return view('busary.selecttype', compact('feetypes', 'type', 'sessions', 'track_id', 'cat', 'error', 'status'));
+    }
+
+    public function selecttype()
+    {
+        $school_code = Auth::user()->school_code; 
+        function random_num($size) {
+          $alpha_key = '';
+          $keys = range('A', 'Z');
+
+          for ($i = 0; $i < 2; $i++) {
+            $alpha_key .= $keys[array_rand($keys)];
+          }
+
+          $length = $size - 2;
+
+          $key = '';
+          $keys = range(0, 9);
+
+          for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+          }
+
+          return $key.$alpha_key.$key;
+        }
+        $track_id = random_num(12);
+        $type = request('type');  
+        $cat = request('cat'); 
+        $error = request('error');  
+        $status = request('status');  
+        $sessions = Session::where('deleted_at', NULL)->get();
+        $feetypes = Feecollectiontype::where('deleted_at', NULL)->where('title', $type)->get();
+        return view('busary.selecttype', compact('feetypes', 'type', 'sessions', 'track_id', 'cat', 'error', 'status'));
+    }
+
+    public function storepayment(Request $request)
+    {
+        Account::create($request->all());
+
+        $type = $request->type;
+        //$track_id = $request->track_id;
+        return redirect()->route('type', array('type' => $type));
+        //return redirect()->route('receipt', array('track_id' => $track_id));
+    }
+
+    public function receipt()
+    {
+        $track_id = request('track_id');
+        $receipt = Account::where('deleted_at', NULL)->where('track_id', $track_id)->first();
+        return view('busary.receipt', compact('receipt', 'track_id'));
+    }
+
+    public function account(Request $request)
+    {
+        if (isset($request->start_date) & isset($request->end_date)) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            //return $end_date;
+            $credit = "Credit";
+            $debit = "Debit"; 
+            $accounts = Account::where('deleted_at', NULL)->whereBetween('created_at', [$start_date." 00:00:00", $end_date." 23:59:59"])->orderBy('created_at', 'desc')->get();
+            $income = Account::where('deleted_at', NULL)->whereBetween('created_at', [$start_date." 00:00:00", $end_date." 23:59:59"])->where('type', $credit)->sum('amount');
+            $expenditure = Account::where('deleted_at', NULL)->whereBetween('created_at', [$start_date." 00:00:00", $end_date." 23:59:59"])->where('type', $debit)->sum('amount');
+            $balance = $income - $expenditure;
+            return view('busary.account', compact('accounts', 'income', 'expenditure', 'balance'));
+        }
+        else
+        {
+            $credit = "Credit";
+            $debit = "Debit";
+            $accounts = Account::where('deleted_at', NULL)->orderBy('created_at', 'desc')->get();
+            $income = Account::where('deleted_at', NULL)->where('type', $credit)->sum('amount');
+            $expenditure = Account::where('deleted_at', NULL)->where('type', $debit)->sum('amount');
+            $balance = $income - $expenditure;
+            return view('busary.account', compact('accounts', 'income', 'expenditure', 'balance'));
+        }
+    }
+
+     public function paysalary(Request $request)
+    {
+        $school_code = Auth::user()->school_code;
+        $findschool = School::where('deleted_at', NULL)->where('school_code', $school_code)->first();
+        
+        if (isset($findschool)) {
+            $school_name = $findschool->school_name;
+            $arrlength = count($request->paid_to);
+            for($x = 0; $x < $arrlength; $x++) {
+                $findstaff=Teacher::where('deleted_at', NULL)->where('roll', $request->paid_to[$x])->first();
+                $salary = $findstaff->salary;
+
+                $step2 = new Salary();
+                $step2->school_code = $school_code;
+                $step2->track_id = rand(0, 20000);
+                $step2->month = $request->month;
+                $step2->amount = $salary;
+                $step2->payee = $school_name;
+                $step2->paid_to = $request->paid_to[$x];
+                $step2->status = "Paid";
+                $step2->save();
+                
+            }
+            return back();
+        }
+        else
+        {
+            return back();
+        }
+    }
+
+
+    public function pinused()
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        if (Auth::user()->role == "Sales Rep" || Auth::user()->role == "Marketer") {
+            $username = Auth::user()->username;
+            $cards = Card::where('deleted_at', NULL)->where('status', 1)->where('produced_by', $username)->get();
+        }
+        else
+        {
+            $cards = Card::where('deleted_at', NULL)->where('status', 1)->get();
+        }
+        return view('pin.used', compact('cards', 'error', 'status'));
+    }
+
+    public function pinunused()
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        if (Auth::user()->role == "Sales Rep" || Auth::user()->role == "Marketer") {
+            $username = Auth::user()->username;
+            $cards = Card::where('deleted_at', NULL)->where('status', 0)->where('produced_by', $username)->get();
+        }
+        else
+        {
+            $cards = Card::where('deleted_at', NULL)->where('status', 0)->get();
+        }
+
+        
+        return view('pin.unused', compact('cards', 'error', 'status'));
+    }
+
+    public function generatepin()
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        if (Auth::user()->role == "Sales Rep" || Auth::user()->role == "Marketer") {
+            $username = Auth::user()->username;
+            $schoolss = School::where('deleted_at', NULL)->where('representative', $username)->where('status', '!=', 'Inactive')->get();
+        }
+        else{
+
+            $schoolss = School::where('deleted_at', NULL)->where('status', '!=', 'Inactive')->get();
+        }
+        return view('pin.generate', compact('error', 'status', 'schoolss'));
+    }
+
+    public function storegeneratepin(Request $request)
+    {
+        $status = request('status'); 
+        $error = request('error'); 
+        $value = $request->number;     
+        $school_code = $request->school_code; 
+        $school = School::where('school_code', $school_code)->first();
+        $ini = $school->ini;
+        function random_num($size) {
+              $alpha_key = '';
+              $keys = range('A', 'Z');
+
+              for ($i = 0; $i < 2; $i++) {
+                $alpha_key .= $keys[array_rand($keys)];
+              }
+
+              $length = $size - 2;
+
+              $key = '';
+              $keys = range(0, 9);
+
+              for ($i = 0; $i < $length; $i++) {
+                $key .= $keys[array_rand($keys)];
+              }
+
+              return $key;
+        }
+
+        for ($index = 0; $index < $value; $index++) 
+        {
+            $tick = new Card();
+            $tick->token = $ini.random_num(12);
+            $tick->school_code = $school_code;
+            $tick->session = $school->current_session;
+            $tick->term = $school->current_term;
+            $tick->produced_by = Auth::user()->username;
+            $tick->serial_number = random_num(16);
+            $tick->status  = 0;
+            $tick->save();
+        }
+
+        $status = $value." Scratch Cards Generated Successfully";
+        return redirect()->route('generatepin', array('status' => $status));
+    }
+
+
 }

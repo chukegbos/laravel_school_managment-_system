@@ -124,7 +124,7 @@
 
                         <div class="col-xs-6 col-sm-6 col-md-6">
                             <a href="{{ url('/admin/books') }}">
-                                <div class="panel panel-bd cardbox" style="background: #009688">
+                                <div class="panel panel-bd cardbox" style="background: #DC2D2D">
                                     <div class="panel-body">
                                         <div class="statistic-box">
                                             <h2><span class="count-number"></span>
@@ -207,10 +207,10 @@
                 </div>
             </div>-->
         @elseif(Auth::user()->role=="Staff")
-         
             <div class="row">
-                <div class="col-sm-12 col-md-5">
-                    <div class="panel panel-bd lobidisable">
+                <div class="col-md-2"></div>
+                <div class="col-sm-12 col-md-8">
+                    <div class="panel panel-bd lobidisable" style="text-align:center">
                         <div class="panel-heading">
                             <div class="panel-title">
                                 <h4>Account Info</h4>
@@ -229,7 +229,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-7">
+                <!--<div class="col-sm-12 col-md-7">
                     <div class="panel panel-bd lobidisable">
                         <div class="panel-heading">
                             <div class="panel-title">
@@ -264,6 +264,268 @@
                                     <p><span style="color:#3781d3">Publication Management</span></p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+            
+        @elseif(Auth::user()->role=="Student")
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="panel panel-bd lobidisable" style="text-align:center">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                <h4>Profile Info</h4>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                  <tr>
+                                    <th>Full Name</th>
+                                    <td>{{ $profile->lastname }} {{ $profile->firstname }} {{ $profile->middlename }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>Admission ID</th>
+                                    <td>{{ $profile->roll }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Current Class</th>
+                                    <td>{{ $profile->class }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>Date of Admission</th>
+                                    <td>{{ $profile->doa->toDateString() }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Hostel (Bedspace)</th>
+                                    <td>
+                                      @forelse($hostels as $hostel)
+                                        @if($hostel->code == $profile->hostel)
+                                          {{ $hostel->name }} Hostel - {{ $hostel->category }}- {{ $hostel->gender }}
+                                        @endif
+                                      @empty
+                                      @endforelse
+                                      (Bed {{ $profile->bed }})
+                                    </td>
+                                  </tr>
+
+                                  
+                                  <tr>
+                                    <th>Date of Birth</th>
+                                    <td>{{ $profile->dob->toFormattedDateString() }} ({{ $profile->age }} Years)</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Gender</th>
+                                    <td>{{ $profile->gender }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>Tribe</th>
+                                    <td>{{ $profile->tribe }}</td>
+                                  </tr>
+                                  <tr>
+                                    <th>Religion</th>
+                                    <td>{{ $profile->religion }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Current Address</th>
+                                    <td>{{ $profile->current_address }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Parmanent Address</th>
+                                    <td>{{ $profile->parmanent_address }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Nationality (State of Origin)</th>
+                                    <td>{{ $profile->country }} ({{ $profile->state }})</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Blood Group</th>
+                                    <td>{{ $profile->bg }}</td>
+                                  </tr>
+
+
+                                  <tr>
+                                    <th>Genotype</th>
+                                    <td>{{ $profile->genotype }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Asthmatic</th>
+                                    <td>{{ $profile->asthmatic }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Any Eye Problem?</th>
+                                    <td>{{ $profile->eye }}</td>
+                                  </tr>
+                                  @if($profile->eye=="Yes")
+                                  <tr>
+                                    <th>Eye Issues</th>
+                                    <td>{{ $profile->eye_issue }}</td>
+                                  </tr>
+                                  @endif
+
+                                  <tr>
+                                    <th>Disabled?</th>
+                                    <td>{{ $profile->disability }}</td>
+                                  </tr>
+                                  @if($profile->disability=="Yes")
+                                  <tr>
+                                    <th>Disability</th>
+                                    <td>{{ $profile->disability_issue }}</td>
+                                  </tr>
+                                  @endif
+
+                                  <tr>
+                                    <th>Acceptance Form</th>
+                                    <td>
+                                      @if($profile->acceptance_form==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->acceptance_form }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->acceptance_form }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                      </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Birth Certificate</th>
+                                    <td>
+                                      @if($profile->birth_certificate==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->birth_certificate }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->birth_certificate }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Medical Certificate</th>
+                                    <td>
+                                      @if($profile->medical_certificate==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->medical_certificate }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->medical_certificate }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>School Transfer Certificate</th>
+                                    <td>
+                                      @if($profile->transfer_certificate==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->transfer_certificate }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->transfer_certificate }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                      </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Local Government Identification</th>
+                                    <td>
+                                      @if($profile->lgi==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->lgi }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->lgi }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                      </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Any Licence or Identity Card</th>
+                                    <td>
+                                      @if($profile->licence==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->licence }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->licence }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                      </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>First School Leaving Cerificate</th>
+                                    <td>
+                                      @if($profile->fslc==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->fslc }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->fslc }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Any Other Credential</th>
+                                    <td>
+                                      @if($profile->other_certificate==NULL)
+                                        Not Available
+                                      @else
+                                        <a href="{{ asset('storage') }}/{{ $profile->other_certificate }}"><img class="img-fluid" src="{{ asset('storage') }}/{{ $profile->other_certificate }}" style="height: 60px; width: 60px"> click to view</a>
+                                      @endif
+                                      </td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Name of Guardian</th>
+                                    <td>{{ $profile->guardian_name }}</td>
+                                  </tr>
+
+
+                                  <tr>
+                                    <th>Guardian Initial</th>
+                                    <td>{{ $profile->guardian_initial }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Guardian Relationship</th>
+                                    <td>{{ $profile->guardian_relationship }}</td>
+                                  </tr>
+
+
+                                  <tr>
+                                    <th>Guardian Occupation</th>
+                                    <td>{{ $profile->guardian_occupation }}</td>
+                                  </tr>
+
+
+                                  <tr>
+                                    <th>Guardian Phone Number</th>
+                                    <td>{{ $profile->guardian_phone }}</td>
+                                  </tr>
+
+                                  <tr>
+                                    <th>Guardian Relationship</th>
+                                    <td>{{ $profile->guardian_email }}</td>
+                                  </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="panel panel-bd lobidisable" style="text-align:center">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                <h4>School Info</h4>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <p>Name: <span style="color:#3781d3">{{ $setting->school_name }}</span></p>
+                            <p>School Code: <span style="color:#3781d3">{{ $setting->school_code }}</span></p>
+
+                            <p>Motto: <span style="color:#3781d3">{{ $setting->slogan }}</span></p>
+                            <p>Current Session: <span style="color:#3781d3">{{ $setting->current_session }}</span></p>
+                            <p>Current Term: <span style="color:#3781d3">{{ $setting->current_term }}</span></p>
+                            <p>Address: <span style="color:#3781d3">{{ $setting->address }}</span></p>
+                            <p>Phone: <span style="color:#3781d3">{{ $setting->phone }}</span></p>
+                            <p>Email: <span style="color:#3781d3">{{ $setting->email }}</span></p>
                         </div>
                     </div>
                 </div>

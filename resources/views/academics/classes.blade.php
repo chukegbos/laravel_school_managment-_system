@@ -47,6 +47,7 @@
                         @if(isset($mainsubject)) Subject @else Subject Offered @endif
                       </th>
                       <th>View Students</th>
+                      <th>School Fees</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
@@ -113,7 +114,7 @@
                             {{$class->form_teacher}}<br>
                             <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#assignmodal{{ $class->id }}" >Re-Assign Teacher</a>
                           @else
-                          <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#assignmodal{{ $class->id }}" >Assign Teacher</a>
+                            <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#assignmodal{{ $class->id }}" >Assign Teacher</a>
                           @endif
                         </td>
 
@@ -163,14 +164,6 @@
                           <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#subjectmodal{{ $class->id }}" >Add Subject</a>
                         @endif
                       </td>
-                      
-
-
-
-
-
-
-
                       <div class="modal fade" id="subjectmodal{{ $class->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: auto;">
                         <div class="modal-dialog" style="background:white">
                           <div class="modal-content">
@@ -219,14 +212,46 @@
                         <a href="{{ url('/admin/students') }}/?class_id={{ $class->id }}"><i class="fa fa-pencil btn btn-warning "> View all</i>
                         </a> 
                       </td>
+                      <td>
+                        {{ $class->school_fees }}
+                         <a class="btn btn-primary btn-xs" href="#" data-toggle="modal" data-target="#feemodal{{ $class->id }}" >Edit</a>
 
-                     <td>
+                        <div class="modal fade" id="feemodal{{ $class->id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; height: auto;">
+                          <div class="modal-dialog" style="background:white">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title"> Edit School Fees For This Class</h4>
+                              </div>
+
+                              <form method="post" action="{{ url('admin/editschoolfees') }}" >
+                                <div class="modal-body"> 
+                                  {{ csrf_field() }}
+                                  <input type="hidden" name="id" value="{{ $class->id }}">
+                                  <div class="form-group">
+                                    <label>School Fees</label>
+                                    <input type="number" required="" name="school_fees" value="{{ $class->school_fees}}" class="form-control" />
+                                      </div>
+                                  </div> 
+                                </div>
+                              
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-success"> Save 
+                                    <i class="fa fa-save"></i>
+                                  </button> 
+                                </div>
+                              </form>
+                            </div><!-- /.modal-content -->                     
+                          </div>
+                        </div>
+                      </td>
+                      <td>
                         <form action="{{ url('/admin/destroyclass') }}/{{$class->id}}" method="POST">
                           {{ csrf_field() }}
                           {{ Method_field('DELETE') }}
                            <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                         </form>
-                      </td>
+                        </td>
                     </tr>
                     @empty
                     @endforelse

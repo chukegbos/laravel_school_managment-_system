@@ -12,7 +12,7 @@ class Classes extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'name', 'title', 'capacity', 'number_of_students', 'school_code', 'form', 'subject_offered', 'form_teacher'
+        'name', 'title', 'capacity', 'number_of_students', 'school_code', 'form', 'subject_offered', 'form_teacher', 'school_fees'
     ];
 
     protected $dates = [

@@ -4,6 +4,7 @@
   <div class="content-wrapper">
     <section class="content-header">
       <span style="font-size:20px">All @if(isset($subject)){{$subject}}@endif Teachers</span>  
+      @if(!isset($subject))<a class="btn btn-success pull-right" href="#" data-toggle="modal" data-target="#addsalary" >Record Month Salary</a> | @endif 
       <a class="btn btn-primary pull-right" href="{{ url('/admin/addteacher') }}">Add Staff</a>
     </section>
     <section class="content">
@@ -34,6 +35,9 @@
                       <th>Fullname</th>
                       <th>Staff ID</th>
                       <th>Category</th>
+                      <th>Designation</th>
+                      <th>Grade Level</th>
+                      <th>Salary</th>
                       <th>Form Class</th>
                       <th>Subject Taught</th>
                       <th>Class Taught</th>
@@ -47,6 +51,9 @@
                       <td>{{ $teacher->lastname}} {{ $teacher->firstname }} {{$teacher->middlename}}</td>
                       <td>{{ $teacher->roll }}</td>
                       <td>{{ $teacher->category }}</td>
+                      <td>{{ $teacher->post }}</td>
+                      <td>{{ $teacher->level }}</td>
+                      <td>{{ $teacher->salary }}</td>
                       <td>
                         @forelse($classes as $class)
                           @if($teacher->lastname.' '.$teacher->firstname.' '.$teacher->middlename==$class->form_teacher)
@@ -90,5 +97,50 @@
         </div>  
       </div>      
     </section>
+  </div>
+
+
+  <div class="modal fade" id="addsalary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+      <div class="modal-dialog" style="background:white">
+          <div class="modal-content" style="">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title"> Record Salary</h4>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="{{ url('admin/paysalary') }}" >
+                 {{ csrf_field() }}
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <label for="fname">Select Month of Salary</label>
+                      <input class="form-control" type="date" name="month" required autofocus>
+                    </div> 
+
+                      <ul class="todo-list">
+                        <div class="panel-heading">
+                          <h4>Select Paid Teachers</h4>
+                        </div>
+                        @forelse($teachers as $teacher)
+                          <!--<input type="hidden" name="track_id"  value="{{ rand(0,20000) }}">-->
+                          <li>
+                            <div class="checkbox checkbox-success">
+                              <input id="todo1{{ $teacher->id }}" type="checkbox" name="paid_to[]" value="{{ $teacher->roll }}">
+                              <label for="todo1{{ $teacher->id }}" style="text-decoration: none;">{{ $teacher->lastname }} {{ $teacher->firstname }} {{ $teacher->middlename }} ({{ $teacher->roll }})- N{{ $teacher->salary }}</label>
+                            </div>
+                          </li>
+                        @empty
+                      @endforelse
+                      </ul>
+                  </div>
+                  <button type="submit" class="btn btn-success pull-right">Record <i class="fa fa-save"></i></button>                              
+              </form>
+
+            </div>
+            
+            <div class="modal-footer">
+             
+            </div>
+          </div><!-- /.modal-content -->                     
+      </div>
   </div>
 @endsection

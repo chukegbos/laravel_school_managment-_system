@@ -1,25 +1,25 @@
 @extends('layouts.print')
 @section('pageTitle', 'Result')
 @section('content')
-<style>
-  table, td, th {
-    border: 1px solid black;
-  }
+  <style>
+    table, td, th {
+      border: 1px solid black;
+    }
 
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
 
-  th {
-    height: 20px;
-  }
-</style>
+    th {
+      height: 20px;
+    }
+  </style>
 
 
   <section class="content portfolio-item" style="border-style: solid; border-color: {{ $setting->color }};">
   
-    <div 
+    <div class="row" 
         style="color: #000; font-size: 13px; font-weight: bold; text-align: center; border-style: solid; border-color: #000; border-width: 1px; height: auto">
         <div class="col-md-2">
             <img src="{{ asset('storage') }}/{{ $setting->logo }}" alt="" style="width:105px; height: 100px; margin-top: 5px;">
@@ -428,6 +428,7 @@
         </div>
       </div>
     </div>
+
     <hr>
     <div class="row">
       <div class="col-md-1">

@@ -1,276 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('pageTitle') - {{ $setting->school_name }}</title>
-
-    <!-- Favicon and touch icons -->
-    <link rel="shortcut icon" href="{{ asset('assets/dist/img/ico/favicon.png') }}" type="image/x-icon">
-   <!-- Start Global Mandatory Style
-   =====================================================================-->
-   <!-- jquery-ui css -->
-   <link href="{{ asset('assets/plugins/jquery-ui-1.12.1/jquery-ui.min.css') }}" rel="stylesheet" type="text/css"/>
-   <!-- Bootstrap -->
-   <link href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
-
-   <link href="{{ asset('assets/plugins/lobipanel/lobipanel.min.css') }}" rel="stylesheet" type="text/css"/>
-   <!-- Pace css -->
-   <link href="{{ asset('assets/plugins/pace/flash.css') }}" rel="stylesheet" type="text/css"/>
-   <!-- Font Awesome -->
-   <link href="{{ asset('assets/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css"/>
-   <!-- Pe-icon -->
-   <link href="{{ asset('assets/pe-icon-7-stroke/css/pe-icon-7-stroke.css') }}" rel="stylesheet" type="text/css"/>
-   <!-- Themify icons -->
-   <link href="{{ asset('assets/themify-icons/themify-icons.css') }}" rel="stylesheet" type="text/css"/>
-    <!-- End Global Mandatory Style
-    =====================================================================-->
-    <!-- Start page Label Plugins 
-    =====================================================================-->
-    <!-- Toastr css -->
-    <link href="{{ asset('assets/plugins/toastr/toastr.css') }}" rel="stylesheet" type="text/css"/>
-    <!-- Emojionearea -->
-    <link href="{{ asset('assets/plugins/emojionearea/emojionearea.min.css') }}" rel="stylesheet" type="text/css"/>
-    <!-- Monthly css -->
-    <link href="{{ asset('assets/plugins/monthly/monthly.css') }}" rel="stylesheet" type="text/css"/>
-    <!-- End page Label Plugins 
-    =====================================================================-->
-    <!-- Start Theme Layout Style
-    =====================================================================-->
-    <!-- Theme style -->
-    <link href="{{ asset('assets/dist/css/stylehealth.min.css') }}" rel="stylesheet" type="text/css"/>
-    <!--<link href="{{ asset('assets/dist/css/stylehealth-rtl.css') }}" rel="stylesheet" type="text/css"/>-->
-    <!-- End Theme Layout Style
-    =====================================================================-->
-   <!--<script src="{{ asset('assets/ckeditor/ckeditor.js') }}"></script>-->
-   <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
-   <link href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
-
+    <meta name="keywords" content="Portal," />
+    <meta name="description" content="">
+    <meta name="author" content="Zallasoft Technologies & Solution">
     <style type="text/css">
-      .portfolio-item {
-        position: relative;
-        background: #FFF;
-            background-clip: border-box;
-        margin-bottom: 10px;
-        border: 8px solid #FFF;
-        -webkit-border-radius: 5px;
-        -webkit-background-clip: padding-box;
-        -moz-border-radius: 5px;
-        -moz-background-clip: padding;
-        border-radius: 5px;
-        background-clip: padding-box;
-        -webkit-box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
-        -moz-box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
-        box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
-        color: inset 0 1px #fff,0 0 8px #c8cfe6;
-        -webkit-transition: all .5s ease;
-        -moz-transition: all .5s ease;
-        -o-transition: all .5s ease;
-        -ms-transition: all .5s ease;
-        transition: all .5s ease;
+
+        * {
+          -webkit-print-color-adjust: exact !important;   /* Chrome, Safari */
+          color-adjust: exact !important;                 /*Firefox*/
       }
-      
-      .portfolio-item .portfolio-image {
-        overflow: hidden;
-        text-align: center;
-        position: relative;
+        .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
       }
 
-      .user-panel{
-        background: {{ $setting->color }}
-      }
-      .header-title h1{
-        color: {{ $setting->color }}
-      }
-      .breadcrumb > .active, .content-header .header-icon{
-        color: {{ $setting->color }}
-      }
-      .panel-bd > .panel-heading, .alert-success, .dt-button{
-        background: {{ $setting->color }}
-      }
-      .main-sidebar
-      {
-        background: {{ $setting->color }}
-      }
+        .print-area {border:1px solid black ;padding:1em;}
 
-      .sidebar-menu
-      {
-        background: {{ $setting->color }}
-      }
+        .back {
+          background-image: url("{{ asset('greenbank/images/paper.png')}}");
+        }
     </style>
-  </head>
-    <body class="hold-transition sidebar-mini">
-        @yield('content')
-           
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ asset('greenbank/images/favicon.ico') }}" type="image/x-icon" />
+    
+    <link rel="apple-touch-icon" href="{{ asset('greenbank/js/apple-touch-icon.png') }}">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+
+    <!-- Web Fonts  -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light%7CPlayfair+Display:400" rel="stylesheet" type="text/css">
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/bootstrap/css/bootstrap.min.css') }}">    
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/fontawesome-free/css/all.min.css') }}">   
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/animate/animate.min.css') }}">    
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/simple-line-icons/css/simple-line-icons.min.css') }}">    
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/owl.carousel/assets/owl.carousel.min.css') }}">   
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/owl.carousel/assets/owl.theme.default.min.css') }}">    
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/magnific-popup/magnific-popup.min.css') }}">
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ asset('greenbank/css/theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/css/theme-elements.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/css/theme-blog.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/css/theme-shop.css') }}">
+
+    <!-- Current Page CSS -->
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/rs-plugin/css/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/rs-plugin/css/layers.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/rs-plugin/css/navigation.css') }}">
+    <link rel="stylesheet" href="{{ asset('greenbank/vendor/circle-flip-slideshow/css/component.css') }}">
+    <!-- Skin CSS -->
+    <link rel="stylesheet" href="{{ asset('greenbank/css/skins/default.css') }}">   
+    <script src="master/style-switcher/style.switcher.localstorage.js') }}"></script> 
+
+    <!-- Theme Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('greenbank/css/custom.css') }}">
+
+    <!-- Head Libs -->
+    <script src="{{ asset('greenbank/vendor/modernizr/modernizr.min.js') }}"></script>
+    
+    <style type="text/css">
+          .portfolio-item {
+            position: relative;
+            background: #FFF;
+                background-clip: border-box;
+            margin-bottom: 10px;
+            border: 8px solid #FFF;
+            -webkit-border-radius: 5px;
+            -webkit-background-clip: padding-box;
+            -moz-border-radius: 5px;
+            -moz-background-clip: padding;
+            border-radius: 5px;
+            background-clip: padding-box;
+            -webkit-box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
+            -moz-box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
+            box-shadow: inset 0 1px #fff,0 0 8px #c8cfe6;
+            color: inset 0 1px #fff,0 0 8px #c8cfe6;
+            -webkit-transition: all .5s ease;
+            -moz-transition: all .5s ease;
+            -o-transition: all .5s ease;
+            -ms-transition: all .5s ease;
+            transition: all .5s ease;
+          }
+          
+          .portfolio-item .portfolio-image {
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+          }
+        </style>
+      <!--<link href="{{ asset('css/app.css') }}" rel="stylesheet">-->
         
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="{{ asset('assets/plugins/jQuery/jquery-1.12.4.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/dist/js/lga.js') }}" type="text/javascript"></script>
-        <!-- jquery-ui --> 
-        <script src="{{ asset('assets/plugins/jquery-ui-1.12.1/jquery-ui.min.js') }}" type="text/javascript"></script>
-        <!-- Bootstrap -->
-        <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
-        <!-- lobipanel -->
-        <script src="{{ asset('assets/plugins/lobipanel/lobipanel.min.js') }}" type="text/javascript"></script>
-        <!-- Pace js -->
-        <script src="{{ asset('assets/plugins/pace/pace.min.js') }}" type="text/javascript"></script>
-        <!-- SlimScroll -->
-        <script src="{{ asset('assets/plugins/slimScroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
-        <!-- FastClick -->
-        <script src="{{ asset('assets/plugins/fastclick/fastclick.min.js') }}" type="text/javascript"></script>
-        <!-- Hadmin frame -->
-        <script src="{{ asset('assets/dist/js/custom1.js') }}" type="text/javascript"></script>
-        <!-- End Core Plugins
-        =====================================================================-->
-        <!-- Start Page Lavel Plugins
-        =====================================================================-->
-        <!-- Toastr js -->
-        <script src="{{ asset('assets/plugins/toastr/toastr.min.js') }}" type="text/javascript"></script>
-        <!-- Sparkline js -->
-        <script src="{{ asset('assets/plugins/sparkline/sparkline.min.js') }}" type="text/javascript"></script>
-        <!-- Data maps js -->
-        <script src="{{ asset('assets/plugins/datamaps/d3.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/datamaps/topojson.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/datamaps/datamaps.all.min.js') }}" type="text/javascript"></script>
-        <!-- Counter js -->
-        <script src="{{ asset('assets/plugins/counterup/waypoints.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/counterup/jquery.counterup.min.js') }}" type="text/javascript"></script>
-        <!-- ChartJs JavaScript -->
-        <script src="{{ asset('assets/plugins/chartJs/Chart.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/emojionearea/emojionearea.min.js') }}" type="text/javascript"></script>
-        <!-- Monthly js -->
-        <script src="{{ asset('assets/plugins/monthly/monthly.js') }}" type="text/javascript"></script>
-        <!-- Data maps -->
-        <script src="{{ asset('assets/plugins/datamaps/d3.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/datamaps/topojson.min.js') }}" type="text/javascript"></script>
-        <script src="{{ asset('assets/plugins/datamaps/datamaps.all.min.js') }}" type="text/javascript"></script>
+  </head>
 
-
-       
-      <!--
-
-        <script src="{{ asset('vpad/datatable/DataTables-1.10.15/media/js/jquery.dataTables.min.js') }}"></script>
-       
-         DataTables 
-        <script src="{{ asset('vpad/datatable/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('vpad/datatable/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-        <script src="{{ asset('vpad/datatable/data-table.js') }}"></script>
-      -->
+  <body onload="myFunction()" style="background: white; height: 400px">
+    @yield('content')
+    <!--<script src="{{ asset('js/app.js') }}"></script>-->
+    <!-- Vendor -->
+    <script src="{{ asset('greenbank/vendor/jquery/jquery.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.appear/jquery.appear.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.easing/jquery.easing.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.cookie/jquery.cookie.min.js') }}"></script>    
     
+
+    <script src="{{ asset('greenbank/vendor/popper/umd/popper.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/bootstrap/js/bootstrap.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/vendor/common/common.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.validation/jquery.validate.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.gmap/jquery.gmap.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/jquery.lazyload/jquery.lazyload.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/isotope/jquery.isotope.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/vendor/owl.carousel/owl.carousel.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/magnific-popup/jquery.magnific-popup.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/vendor/vide/jquery.vide.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/vendor/vivus/vivus.min.js') }}"></script>
     
-   
+    <!-- Theme Base, Components and Settings -->
+    <script src="{{ asset('greenbank/js/theme.js') }}"></script>
     
+    <!-- Current Page Vendor and Views -->
+    <script src="{{ asset('greenbank/vendor/rs-plugin/js/jquery.themepunch.tools.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/vendor/rs-plugin/js/jquery.themepunch.revolution.min.js') }}"></script>    
+    <script src="{{ asset('greenbank/vendor/circle-flip-slideshow/js/jquery.flipshow.min.js') }}"></script>   
+    <script src="{{ asset('greenbank/js/views/view.home.js') }}"></script>
     
+    <!-- Theme Custom -->
+    <script src="{{ asset('greenbank/js/custom.js') }}"></script>
     
-    
-    
-    
-    
-      
-      <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+    <!-- Theme Initialization Files -->
+    <script src="{{ asset('greenbank/js/theme.init.js') }}"></script>
 
+    <script src="{{ asset('vpad/datatable/DataTables-1.10.15/media/js/jquery.dataTables.min.js') }}"></script>
+    <!-- JqueryPrintArea -->
+      <script src="{{ asset('userpage/js/vendor_plugins/JqueryPrintArea/demo/jquery.PrintArea.js') }}"></script> 
+      <!-- DataTables -->
+      <script src="{{ asset('vpad/datatable/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+      <script src="{{ asset('vpad/datatable/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+      <script src="{{ asset('vpad/datatable/data-table.js') }}"></script>
+    <script src="{{ asset('greenbank/master/analytics/analytics.js') }}"></script>  
+  </body>
 
-
-
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
-        <script src="{{ asset('assets/plugins/summernote/summernote.js') }}" type="text/javascript"></script>
-        <script>
-          //summernote
-          "use strict"; // Start of use strict
-           var note = $('#summernote');
-          $(note).summernote({
-              height: 200, // set editor height
-              minHeight: null, // set minimum height of editor
-              maxHeight: null, // set maximum height of editor
-              focus: true  // set focus to editable area after initializing summernote
-          });           
-        </script>
-        <script>
-          $(document).ready(function() {
-              $('.js-example-basic-single').select2();
-          });
-
-          $(document).ready(function() {
-              $('#example2').DataTable( {
-
-                dom: 'Bfrtip',
-                lengthMenu: [
-                    [ 10, 25, 50, 100, -1 ],
-                    [ '10 rows', '25 rows', '50 rows', '100 rows', 'Show all' ]
-                ],
-      
-                  
-                  buttons: [
-                      'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength'
-                  ],
-
-                  'paging'      : true,
-                  'lengthChange': true,
-                  'searching'   : true,
-                  'ordering'    : true,
-                  'info'        : true,
-                  'autoWidth'   : false,
-              } );
-          } );
-        </script>
-        <!-- End Page Lavel Plugins
-        =====================================================================-->
-        <!-- Start Theme label Script
-        =====================================================================-->
-        <!-- Dashboard js -->
-        <script src="{{ asset('assets/dist/js/custom.js') }}" type="text/javascript"></script>
-        <div id="confirm" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-
-                    <!-- Modal content-->
-                    <div class="modal-content ">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">×</button>
-                        <h4 class="modal-title">Confirm Identity</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="panel panel-bd lobidrag">
-                            <div class="panel-body">
-                                <form method="POST" action="{{ route('switchback') }}">
-                                  {{ csrf_field() }}
-
-                                  <div class="form-group">
-                                      <label class="control-label" for="unique_id">Login Username</label>
-                                      <input type="text" title="Please enter your unique username" required autofocus value="{{ old('username') }}" name="username" class="form-control">
-                                       @if ($errors->has('username'))
-                                          <span class="help-block">
-                                              <strong>{{ $errors->first('username') }}</strong>
-                                          </span>
-                                      @endif
-                                      <span class="help-block small">Your unique username</span>
-                                  </div>
-
-                                  <div class="form-group">
-                                      <label class="control-label" for="password">Password</label>
-                                      <input type="password" title="Please enter your password"  required=""  name="password" id="password" class="form-control">
-                                      @if ($errors->has('password'))
-                                          <span class="help-block">
-                                              <strong>{{ $errors->first('password') }}</strong>
-                                          </span>
-                                      @endif
-                                      <span class="help-block small">Your strong password</span>
-                                  </div>
-
-                                  <div>
-                                      <button class="btn btn-primary">Confirm</button>
-                                  </div>
-                              </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </body>
+  <script>
+      function myFunction() {
+        window.print();
+      }
+    </script>
 </html>

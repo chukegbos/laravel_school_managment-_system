@@ -57,6 +57,11 @@ Route::prefix('admin')->group(function () {
 	Route::post('/updatesession', 'HomeController@updatesession')->name('updatesession');
 	Route::delete('/destroysession/{id}', 'HomeController@destroysession');
 
+	Route::post('/editschoolfees', 'HomeController@editschoolfees')->name('editschoolfees');
+	Route::get('/schoolfeeshistory', 'HomeController@schoolfeeshistory')->name('schoolfeeshistory');
+	Route::get('/manageschoolfees', 'HomeController@manageschoolfees')->name('manageschoolfees');
+	Route::get('/markfee', 'HomeController@markfee')->name('markfee');
+
 	Route::get('/standard', 'HomeController@standard')->name('standard');
 	Route::post('/storestandard', 'HomeController@storestandard');
 	Route::post('/standard', 'HomeController@updatestandard');
@@ -149,6 +154,7 @@ Route::prefix('admin')->group(function () {
 
 
 	//Staff
+	Route::get('/getformclass', 'HomeController@getformclass')->name('getformclass');
 	Route::get('/formclass', 'HomeController@formclass')->name('formclass');
 	Route::post('/subjectcheck', 'HomeController@subjectcheck');
 	Route::get('/subjectclass', 'HomeController@subjectclass')->name('subjectclass');
@@ -173,6 +179,49 @@ Route::prefix('admin')->group(function () {
 	Route::get('/applicant', 'HomeController@applicant')->name('applicant');
 	Route::get('/condition', 'HomeController@condition')->name('condition');
 	Route::get('/applicantprofile', 'HomeController@applicantprofile')->name('applicantprofile');
+
+	Route::get('/feetype', 'HomeController@feetype')->name('feetype');
+	Route::post('/feetype', 'HomeController@storefeetype');
+	Route::get('/editfeetype/{id}', 'HomeController@editfeetype');
+	Route::post('/editfeetype/{id}', 'HomeController@updatetfeetype');
+	Route::put('/editfeetype/{id}', 'HomeController@updatefeetype');
+	Route::delete('/deletefeetype/{id}', 'HomeController@destroyfeetype');
+	Route::get('/type', 'HomeController@type')->name('type');
+	Route::get('/invoicelist', 'HomeController@invoicelist')->name('invoicelist');
+	Route::get('/invoice', 'HomeController@invoice')->name('invoice');
+	Route::post('/paysalary', 'HomeController@paysalary')->name('paysalary');
+
+
+	Route::get('/selecttype', 'HomeController@selecttype')->name('selecttype');
+	Route::post('/storepayment', 'HomeController@storepayment');
+	Route::get('/receipt', 'HomeController@receipt')->name('receipt');
+	Route::get('/account', 'HomeController@account')->name('account');
+	Route::Post('/account', 'HomeController@account')->name('searchaccount');
+
+
+	Route::get('/pinused', 'HomeController@pinused')->name('pinused');
+	Route::get('/pinunused', 'HomeController@pinunused')->name('pinunused');
+	Route::get('/generatepin', 'HomeController@generatepin')->name('generatepin');
+	Route::post('/generatepin', 'HomeController@storegeneratepin')->name('storegeneratepin');
+
+
+
+	Route::get('/learning', 'ResourceController@index')->name('learning');
+	Route::get('/notes', 'ResourceController@notes')->name('notes');
+	Route::get('/viewnote', 'ResourceController@viewnote')->name('viewnote');
+	Route::post('/note', 'ResourceController@storenote')->name('storenote');
+	Route::post('/updatenote', 'ResourceController@updatenote')->name('updatenote');
+	Route::delete('/destroynote/{id}', 'ResourceController@destroynote')->name('destroynote');
+
+
+	Route::get('/putassignment', 'ResourceController@putassignment')->name('putassignment');
+	Route::get('/viewassignment', 'ResourceController@viewassignment')->name('viewassignment');
+	Route::get('/viewsubmitted', 'ResourceController@viewsubmitted')->name('viewsubmitted');
+	Route::post('/submitassignment', 'ResourceController@submitassignment')->name('submitassignment');
+	Route::post('/putassignment', 'ResourceController@storeassignment')->name('storeassignment');
+	Route::post('/addscore', 'ResourceController@addscore')->name('addscore');
+	Route::post('/updateassignment', 'ResourceController@updateassignment')->name('updateassignment');
+	Route::delete('/destroyassignment/{id}', 'ResourceController@destroyassignment')->name('destroyassignment');
 });
 Route::get('/admission', 'AdmissionController@index')->name('getadmission');
 Route::post('/admission', 'AdmissionController@storeadmission')->name('storeadmission');

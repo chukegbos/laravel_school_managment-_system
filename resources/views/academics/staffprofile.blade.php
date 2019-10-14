@@ -125,6 +125,21 @@
                           </tr>
 
                           <tr>
+                            <th>Designation/Post</th>
+                            <td>{{ $profile->post }}</td>
+                          </tr>
+
+                          <tr>
+                            <th>Grade Level</th>
+                            <td>{{ $profile->level }}</td>
+                          </tr>
+
+                          <tr>
+                            <th>Monthly Salary</th>
+                            <td>{{ $profile->salary }}</td>
+                          </tr>
+
+                          <tr>
                             <th>Current Form Class</th>
                             <td>{{ $profile->class }}</td>
                           </tr>

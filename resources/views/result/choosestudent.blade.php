@@ -33,14 +33,20 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="fname">Select Student</label>
-                                        <select name="roll" class="form-control select2 js-example-basic-single" required="" >
-                                            <option value="">Search Student</option>
-                                            @forelse($students as $student)
-                                                <option value="{{ $student->roll}}">{{ $student->lastname }} {{ $student->firstname }} {{ $student->middlename }}</option>
-                                            @empty
-                                            @endforelse
-                                        </select>
+
+                                        @if(Auth::user()->role=="Student")
+                                            <label for="fname">Student Roll Number</label>
+                                            <input type="text" readonly="true" name="roll" value="{{ Auth::user()->username }}" class="form-control">
+                                        @else
+                                            <label for="fname">Select Student</label>
+                                            <select name="roll" class="form-control select2 js-example-basic-single" required="" >
+                                                <option value="">Search Student</option>
+                                                @forelse($students as $student)
+                                                    <option value="{{ $student->roll}}">{{ $student->lastname }} {{ $student->firstname }} {{ $student->middlename }}</option>
+                                                @empty
+                                                @endforelse
+                                            </select>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -68,6 +74,15 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                @if(Auth::user()->role=="Student")
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="fname">Put PIN</label>
+                                        <input type="text" required="" name="pin" class="form-control">
+                                    </div>
+                                </div>
+                                @endif
                             </div>                        
                             <button type="submit" class="btn btn-success pull-right">Select <i class="fa fa-save"></i></button>                              
                         </form>

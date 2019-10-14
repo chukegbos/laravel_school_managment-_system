@@ -221,6 +221,40 @@
                                   </select>
                               </div>
                           </div> 
+
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label>Designation/Post</label>
+                              <input type="text" class="form-control" name="post" placeholder="Bursar or Principal or Cook or Gateman" required="">
+                            </div>
+                          </div> 
+
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label>Grade Level</label>
+                              <select name="level" class="form-control" required>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                              </select>
+                            </div>
+                          </div> 
+
+                          <div class="col-md-4">
+                            <div class="form-group">
+                              <label>Salary</label>
+                              <input type="number" class="form-control" name="salary" required="">
+                            </div>
+                          </div> 
+
                           <div class="col-md-4">
                               <div class="form-group">
                                   <label for="fname">Registation Number</label>

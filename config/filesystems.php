@@ -57,8 +57,8 @@ return [
         ],
         'public1' => [
             'driver' => 'local',
-            'root' => '/home/highscho/public_html/myschool/storage',
-            //'root' => storage_path('app/public'),
+            //'root' => '/home/highscho/public_html/myschool/storage',
+            'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],

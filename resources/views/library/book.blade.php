@@ -169,6 +169,7 @@
                         </div>
                       </div>
                     @empty
+                    
                     @endforelse
                   </tbody>                     
                 </table>

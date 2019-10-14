@@ -196,7 +196,7 @@
 
                                 <hr>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Choose Category</label>
                                         <select name="category" class="form-control" id="category_id2">
@@ -206,15 +206,41 @@
                                         </select>
                                     </div>
                                 </div> 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Position/Designation</label>
-                                        <input class="form-control" type="text" id="fname" value="{{ $profile->position }}"  name="position" required autofocus>
+                                        <input class="form-control" type="text" value="{{ $profile->post }}"  name="post" required autofocus>
                                      </div>
                                 </div> 
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Salary</label>
+                                        <input class="form-control" type="number" value="{{ $profile->salary }}"  name="salary" required>
+                                     </div>
+                                </div> 
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                      <label>Grade Level</label>
+                                      <select name="level" class="form-control" required>
+                                        <option {{ $profile->level == "6" ? 'selected' : '' }} value="6">6</option>
+                                        <option {{ $profile->level == "7" ? 'selected' : '' }} value="7">7</option>
+                                        <option {{ $profile->level == "8" ? 'selected' : '' }} value="8">8</option>
+                                        <option {{ $profile->level == "9" ? 'selected' : '' }} value="9">9</option>
+                                        <option {{ $profile->level == "10" ? 'selected' : '' }} ="10">10</option>
+                                        <option {{ $profile->level == "11" ? 'selected' : '' }} value="11">11</option>
+                                        <option {{ $profile->level == "12" ? 'selected' : '' }} value="12">12</option>
+                                        <option {{ $profile->level == "13" ? 'selected' : '' }} value="13">13</option>
+                                        <option {{ $profile->level == "14" ? 'selected' : '' }} value="14">14</option>
+                                        <option {{ $profile->level == "15" ? 'selected' : '' }} value="15">15</option>
+                                        <option {{ $profile->level == "16" ? 'selected' : '' }} value="16">16</option>
+                                      </select>
+                                    </div>
+                                </div> 
+
                                 <hr>
 
-                               <div class="col-md-3">
+                               <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="fname">Assign Primary Subject</label>
                                         <select name="subject" class="form-control" id="form">
@@ -227,7 +253,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="fname">Recent Degree</label>
                                         <input class="form-control"  value="{{ $profile->last_degree }}" type="text" name="last_degree" required autofocus>                       

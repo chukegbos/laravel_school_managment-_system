@@ -64,7 +64,8 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="{{ url('/admin/pins') }}">All PINs</a></li>
+                        <li><a href="{{ url('/admin/pinused') }}">Used PINs</a></li>
+                        <li><a href="{{ url('/admin/pinunused') }}">Unused PINs</a></li>
                         <li><a href="{{ url('/admin/generatepin') }}">Generate PIN</a></li>
                     </ul>
                 </li>
@@ -88,6 +89,19 @@
                         <li><a href="{{ url('/admin/schools') }}/?school_status=Inactive">Inactive School</a></li>         
                     </ul>
                 </li> 
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-sitemap"></i><span>Scratch Card</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ url('/admin/pinused') }}">Used PINs</a></li>
+                        <li><a href="{{ url('/admin/pinunused') }}">Unused PINs</a></li>
+                        <li><a href="{{ url('/admin/generatepin') }}">Generate PIN</a></li>
+                    </ul>
+                </li>
                 <li>
                     <a href="{{ url('/admin/mail') }}"><i class="fa fa-envelope-o"></i><span>Support</span>
                     </a>
@@ -202,20 +216,6 @@
                     </ul>
                 </li>
 
-
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-money"></i><span>Fee Management</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="{{ url('/admin/sessions') }}">Academic Session</a></li>
-                        <li><a href="{{ url('/admin/standard') }}">Academic Standards</a></li>
-                    </ul>
-                </li>
-
                 <li class="treeview">
                     <a href="#">
                         <i class="hvr-buzz-out fa fa-ambulance"></i><span>Clinic Management</span>
@@ -238,11 +238,63 @@
                     </a>
                     <ul class="treeview-menu">
                         <li><a href="{{ url('/admin/books') }}">Books</a></li>
-                        <li><a href="{{ url('/admin/lend') }}">On Hire</a></li>
+                        <li><a href="{{ url('/admin/lend') }}">Leased</a></li>
                         <li><a href="{{ url('/admin/lendhistory') }}">History</a></li>
                     </ul>
                 </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-money"></i><span>Account Management</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{{ url('/admin/feetype') }}">Account Type</a></li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-money"></i><span>Income</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{{ url('/admin/invoicelist') }}">Invoice</a></li>
+                                <li><a href="{{ url('/admin/type') }}/?type=Credit">Revenue</a></li>
+                                <li><a href="{{ url('/admin/manageschoolfees') }}">School Fees</a></li>
+                                <li><a href="{{ url('/admin/schoolfeeshistory') }}">School Fees History</a></li>
+                            </ul>
+                        </li>
 
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-money"></i><span>Expense</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{{ url('/admin/feetype') }}">Bill</a></li>
+                                <li><a href="{{ url('/admin/type') }}/?type=Debit">Payment</a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-money"></i><span>Report</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{{ url('/admin/feetype') }}">Income Summary</a></li>
+                                <li><a href="{{ url('/admin/type') }}/?type=Debit">Expense Summary</a></li>
+                                <li><a href="{{ url('/admin/type') }}/?type=Debit">Income Vs Expense</a></li>
+                                <li><a href="{{ url('/admin/type') }}/?type=Debit">Profit and Loss</a></li>
+                            </ul>
+                        </li>
+                        
+                    </ul>
+                </li>
                 <!--<li class="treeview">
                     <a href="#">
                         <i class="hvr-buzz-out fa fa-newspaper-o"></i><span>News & Publications</span>
@@ -265,8 +317,13 @@
                     </a>
                 </li>
             @elseif(Auth::user()->role=="Staff")
-                <li>
+                <!--<li>
                     <a href="{{ url('/admin/formclass') }}">
+                        <i class="fa fa-home"></i><span>Form Class</span>
+                    </a>
+                </li>-->
+                <li>
+                    <a href="{{ url('/admin/getformclass') }}">
                         <i class="fa fa-home"></i><span>Form Class</span>
                     </a>
                 </li>
@@ -274,6 +331,12 @@
                 <li>
                   <a href="{{ url('/admin/subjectclass') }}">
                     <i class="fa fa-plus"></i><span>Subject Class</span>
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{ url('/admin/learning') }}">
+                    <i class="fa fa-book"></i><span>E-Learning</span>
                   </a>
                 </li>
                 
@@ -284,10 +347,16 @@
                 </li>
             @elseif(Auth::user()->role=="Student")
                 <li>
-                  <a href="{{ url('/admin/studentresult') }}">
+                  <a href="{{ url('/admin/learning') }}">
+                    <i class="fa fa-book"></i><span>E-Learning</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ url('admin/viewresult') }}/?student=student">
                     <i class="fa fa-plus"></i> <span>My Result</span>
                   </a>
                 </li>
+                
             @endif
             <!--<li>
                 <a href="{{ url('/password') }}"><i class="fa fa-user"></i><span>Profile</span>
